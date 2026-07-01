@@ -55,7 +55,7 @@ app.get('/api/user/:username', async (req, res) => {
 
 // 2. Confessions (Send anonymous message)
 app.post('/api/message/send', async (req, res) => {
-  const { recipient_username, content, device, gender, location } = req.body;
+  const { recipient_username, content, device, gender, location, sender_name, sender_username } = req.body;
 
   if (!recipient_username || !content) {
     return res.status(400).json({ error: 'Recipient username and content are required' });
@@ -67,7 +67,15 @@ app.post('/api/message/send', async (req, res) => {
       return res.status(404).json({ error: 'Recipient not found' });
     }
 
-    await db.addMessage(recipient.id, content, device, gender, location);
+    await db.addMessage(
+      recipient.id, 
+      content, 
+      device, 
+      gender, 
+      location, 
+      sender_name || 'Anonim Stalker', 
+      sender_username || null
+    );
     res.json({ success: true, message: 'Anonymous message sent successfully!' });
   } catch (error) {
     res.status(500).json({ error: error.message });

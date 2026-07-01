@@ -74,7 +74,7 @@ export const db = {
   },
 
   // Messages (Confessions)
-  addMessage: async (recipientId, content, device, gender, location) => {
+  addMessage: async (recipientId, content, device, gender, location, senderName = 'Anonim Stalker', senderUsername = null) => {
     const data = await readData();
     const newMessage = {
       id: Date.now() + Math.floor(Math.random() * 1000),
@@ -83,6 +83,8 @@ export const db = {
       device: device || 'iPhone',
       gender: gender || 'unknown',
       location: location || 'Toshkent',
+      sender_name: senderName,
+      sender_username: senderUsername,
       created_at: new Date().toISOString()
     };
     data.messages.push(newMessage);

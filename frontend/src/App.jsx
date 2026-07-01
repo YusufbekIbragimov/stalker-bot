@@ -28,6 +28,7 @@ export default function App() {
   
   // UI states
   const [showReferralModal, setShowReferralModal] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState(null);
   const [statusMessage, setStatusMessage] = useState({ type: '', text: '' });
   const [matchNotification, setMatchNotification] = useState(false);
 
@@ -170,7 +171,9 @@ export default function App() {
           recipient_username: targetUsername,
           content: confessionText,
           device: randomDevice,
-          location: randomLoc
+          location: randomLoc,
+          sender_name: currentUser?.first_name || 'Anonim Stalker',
+          sender_username: currentUser?.username || null
         })
       });
 
@@ -532,7 +535,7 @@ export default function App() {
               </div>
             ) : (
               messages.map((msg, index) => (
-                <div className="message-card" key={msg.id} onClick={() => setShowReferralModal(true)}>
+                <div className="message-card" key={msg.id} onClick={() => setSelectedMessage(msg)}>
                   <div className="message-header">
                     <span className="message-tag">Stalker #{messages.length - index}</span>
                     <span className="message-time">
@@ -540,12 +543,8 @@ export default function App() {
                     </span>
                   </div>
                   
-                  {/* Blurr body if not unlocked via referrals */}
-                  <div className="message-body" style={{
-                    filter: referralStatus.unlocked ? 'none' : 'blur(4px)',
-                    userSelect: referralStatus.unlocked ? 'auto' : 'none'
-                  }}>
-                    {referralStatus.unlocked ? msg.content : "Ushbu maxfiy xabarni o'qish uchun stalker kimligini ochish kerak."}
+                  <div className="message-body">
+                    {msg.content}
                   </div>
 
                   <div className="message-footer">
@@ -557,16 +556,14 @@ export default function App() {
                     </div>
                   </div>
 
-                  {!referralStatus.unlocked && (
-                    <button className="submit-btn" style={{
-                      padding: '8px 12px',
-                      fontSize: '12px',
-                      marginTop: '5px',
-                      alignSelf: 'flex-start'
-                    }}>
-                      Stalker kimligini aniqlash 🕵️‍♂️
-                    </button>
-                  )}
+                  <button className="submit-btn" style={{
+                    padding: '8px 12px',
+                    fontSize: '12px',
+                    marginTop: '5px',
+                    alignSelf: 'flex-start'
+                  }}>
+                    Stalker kimligini ko'rish 🕵️‍♂️
+                  </button>
                 </div>
               ))
             )}
@@ -669,47 +666,55 @@ export default function App() {
         )}
       </main>
 
-      {/* Referral Lock Modal */}
-      {showReferralModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-icon-container">
+      {/* Selected Message (Stalker Details) Modal */}
+      {selectedMessage && (
+        <div className="modal-overlay" onClick={() => setSelectedMessage(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-icon-container" style={{ background: 'rgba(255, 0, 127, 0.15)', color: 'var(--accent-secondary)' }}>
               <svg className="modal-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
             
-            <h2>Stalkerlar yopiq! 🔐</h2>
-            <p>Sizga kim yozganini yoki baho berganini bilish uchun botga kamida **3 ta do'stingizni** taklif qilishingiz kerak!</p>
-
-            <div className="referral-progress-container">
-              <div className="progress-stats">
-                <span>Taklif etilgan do'stlar:</span>
-                <span>{referralStatus.count} / 3</span>
+            <h2>Stalker Haqida Ma'lumot 🕵️‍♂️</h2>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', width: '100%', margin: '20px 0', textAlign: 'left' }}>
+              <div style={{ background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                <span style={{ fontSize: '11px', color: 'var(--text-secondary)', display: 'block' }}>Xabar tarkibi:</span>
+                <p style={{ margin: '5px 0 0 0', fontStyle: 'italic', color: '#fff' }}>"{selectedMessage.content}"</p>
               </div>
-              <div className="referral-progress-bar-bg">
-                <div className="referral-progress-bar-fill" style={{
-                  width: `${Math.min((referralStatus.count / 3) * 100, 100)}%`
-                }} />
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--text-secondary)', display: 'block' }}>📱 Qurilma (Device):</span>
+                  <span style={{ fontWeight: 'bold', color: '#fff' }}>{selectedMessage.device}</span>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--text-secondary)', display: 'block' }}>📍 Lokatsiya (Taxminiy):</span>
+                  <span style={{ fontWeight: 'bold', color: '#fff' }}>{selectedMessage.location}</span>
+                </div>
+              </div>
+
+              <div style={{ background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                <span style={{ fontSize: '11px', color: 'var(--text-secondary)', display: 'block' }}>👤 Yozuvchi shaxs (Telegram):</span>
+                {selectedMessage.sender_username ? (
+                  <div style={{ marginTop: '5px' }}>
+                    <span style={{ fontWeight: 'bold', color: 'var(--accent-cyan)', display: 'block' }}>
+                      Ismi: {selectedMessage.sender_name}
+                    </span>
+                    <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                      Telegram: @{selectedMessage.sender_username}
+                    </span>
+                  </div>
+                ) : (
+                  <span style={{ fontWeight: 'bold', color: 'var(--accent-secondary)', marginTop: '5px', display: 'block' }}>
+                    Anonim Stalker (Chrome / Safari brauzeridan yozgan)
+                  </span>
+                )}
               </div>
             </div>
 
-            {referralStatus.count > 0 && (
-              <div className="referral-list-preview">
-                {referralStatus.referrals.map((name, i) => (
-                  <div className="ref-row" key={i}>
-                    <span>👤 {name}</span>
-                    <span>Qo'shildi ✅</span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <button className="submit-btn" onClick={handleCopyLink}>
-              Ssilkani nusxalash va Ulashish 🔗
-            </button>
-
-            <button className="close-modal-btn" onClick={() => setShowReferralModal(false)}>
+            <button className="submit-btn" onClick={() => setSelectedMessage(null)}>
               Yopish
             </button>
           </div>
