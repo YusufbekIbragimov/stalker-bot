@@ -285,14 +285,32 @@ export default function App() {
     }
   };
 
-  const getInviteLink = () => {
+  const getInstagramLink = () => {
     if (!currentUser) return '';
-    return `https://t.me/stalker_bot/app?startapp=${currentUser.referral_code}`;
+    return `${window.location.origin}/?to=${currentUser.username}`;
   };
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(getInviteLink());
-    showStatus('success', 'Taklif havolasi nusxalandi!');
+  const getInviteLink = () => {
+    if (!currentUser) return '';
+    return `https://t.me/stalker_fow_bot?start=ref_${currentUser.referral_code}`;
+  };
+
+  const handleCopyInstagramLink = () => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(getInstagramLink());
+      showStatus('success', 'Instagram havolasi nusxalandi! Stories-ga joylang 📸');
+    } else {
+      showStatus('error', 'Havola nusxalab bo\'lmadi, uni qo\'lda nusxalang');
+    }
+  };
+
+  const handleCopyInviteLink = () => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(getInviteLink());
+      showStatus('success', 'Taklif havolasi nusxalandi! 👥');
+    } else {
+      showStatus('error', 'Havola nusxalab bo\'lmadi, uni qo\'lda nusxalang');
+    }
   };
 
   // Visitor Mode render
@@ -455,11 +473,26 @@ export default function App() {
             </div>
           </div>
 
-          <p>Ushbu taklif linkini do'stlaringizga yuboring. Kimdir sizga xabar yozadi yoki baholaydi!</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '15px', width: '100%', textAlign: 'left' }}>
+            <div>
+              <span style={{ fontSize: '12px', color: 'var(--accent-secondary)', fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>
+                📸 Instagram Story uchun havola (Anonim xabarlar to'plash):
+              </span>
+              <div className="share-link-box" style={{ marginTop: '0' }}>
+                <span className="share-link-text">{getInstagramLink() || 'Yuklanmoqda...'}</span>
+                <button className="copy-btn" onClick={handleCopyInstagramLink}>Nusxalash</button>
+              </div>
+            </div>
 
-          <div className="share-link-box">
-            <span className="share-link-text">{getInviteLink() || 'Yuklanmoqda...'}</span>
-            <button className="copy-btn" onClick={handleCopyLink}>Nusxalash</button>
+            <div>
+              <span style={{ fontSize: '12px', color: 'var(--accent-cyan)', fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>
+                👥 Do'stlarni taklif qilish (Referral) havolasi:
+              </span>
+              <div className="share-link-box" style={{ marginTop: '0' }}>
+                <span className="share-link-text">{getInviteLink() || 'Yuklanmoqda...'}</span>
+                <button className="copy-btn" onClick={handleCopyInviteLink}>Nusxalash</button>
+              </div>
+            </div>
           </div>
         </div>
       </header>
