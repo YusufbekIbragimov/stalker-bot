@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Production build
+dist/
+frontend/dist/
+
+# Configuration and Database
+.env
+backend/.env
+backend/database.json
+database.json
+
+# Local System Files
+.DS_Store
+*.log
