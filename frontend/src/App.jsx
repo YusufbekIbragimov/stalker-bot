@@ -318,13 +318,19 @@ export default function App() {
 
   // Visitor Mode render
   if (visitorMode) {
+    const isSelfView = currentUser && currentUser.username === targetUsername;
+
     return (
       <div className="visitor-container">
         <div className="send-header">
           <div className="send-avatar">🕵️‍♂️</div>
           <h1>{targetUser ? targetUser.first_name : 'Kuzatuv'}</h1>
           <div className="username-tag">@{targetUsername}</div>
-          <p>Siz bu foydalanuvchining anonim "Stalker" sahifasidasiz. Uni fosh qilmasdan xabar yozing yoki unga baho bering!</p>
+          {isSelfView ? (
+            <p>Bu sizning shaxsiy sahifangiz!</p>
+          ) : (
+            <p>Siz bu foydalanuvchining anonim "Stalker" sahifasidasiz. Uni fosh qilmasdan xabar yozing yoki unga baho bering!</p>
+          )}
         </div>
 
         <div className="tabs-content">
@@ -334,83 +340,98 @@ export default function App() {
             </div>
           )}
 
-          <div className="send-card">
-            <h2>💌 Anonim E'tirof yozish</h2>
-            <form onSubmit={handleSendConfession} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              <div className="input-group">
-                <textarea
-                  className="input-field textarea-field"
-                  placeholder="Bu yerga anonim xat yoki e'tirofingizni yozing..."
-                  value={confessionText}
-                  onChange={(e) => setConfessionText(e.target.value)}
-                  maxLength={300}
-                  required
-                />
-              </div>
-              <button type="submit" className="submit-btn">Xabarni yuborish (Anonim)</button>
-            </form>
-          </div>
-
-          <div className="send-card">
-            <h2>📊 Profilni anonim baholash</h2>
-            <form onSubmit={handleSendRating} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <div className="slider-group">
-                <div className="slider-item">
-                  <div className="slider-header">
-                    <span>Kiyim kiyishi (Style)</span>
-                    <span>{rateStyle}/10</span>
-                  </div>
-                  <input
-                    type="range" min="1" max="10"
-                    className="slider-input"
-                    value={rateStyle}
-                    onChange={(e) => setRateStyle(e.target.value)}
-                  />
-                </div>
-
-                <div className="slider-item">
-                  <div className="slider-header">
-                    <span>Soxtalik darajasi (Fake Level)</span>
-                    <span>{rateFake}/10</span>
-                  </div>
-                  <input
-                    type="range" min="1" max="10"
-                    className="slider-input"
-                    value={rateFake}
-                    onChange={(e) => setRateFake(e.target.value)}
-                  />
-                </div>
-
-                <div className="slider-item">
-                  <div className="slider-header">
-                    <span>Kibrliligi (Kasal darajasi)</span>
-                    <span>{rateKibr}/10</span>
-                  </div>
-                  <input
-                    type="range" min="1" max="10"
-                    className="slider-input"
-                    value={rateKibr}
-                    onChange={(e) => setRateKibr(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="input-group">
-                <input
-                  type="text"
-                  className="input-field"
-                  placeholder="U haqida biror izoh qoldiring (ixtiyoriy)"
-                  value={rateComment}
-                  onChange={(e) => setRateComment(e.target.value)}
-                  maxLength={100}
-                />
-              </div>
-
-              <button type="submit" className="submit-btn" style={{ background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-cyan))', boxShadow: 'var(--glow-cyan)' }}>
-                Baholashni yuborish
+          {isSelfView ? (
+            <div className="send-card" style={{ textAlign: 'center', padding: '30px 20px' }}>
+              <span style={{ fontSize: '40px', display: 'block', marginBottom: '15px' }}>📸</span>
+              <h3>O'zingizga o'zingiz yoza olmaysiz!</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', margin: '10px 0 20px 0', lineHeight: '1.5' }}>
+                Ushbu havola do'stlaringiz sizga anonim xabar yozishlari uchun mo'ljallangan. Havolani Instagram Stories'ga joylang va do'stlaringizdan e'tiroflar qabul qiling!
+              </p>
+              <button className="submit-btn" onClick={() => window.location.search = ''}>
+                Dashboard'ga qaytish 📊
               </button>
-            </form>
-          </div>
+            </div>
+          ) : (
+            <>
+              <div className="send-card">
+                <h2>💌 Anonim E'tirof yozish</h2>
+                <form onSubmit={handleSendConfession} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                  <div className="input-group">
+                    <textarea
+                      className="input-field textarea-field"
+                      placeholder="Bu yerga anonim xat yoki e'tirofingizni yozing..."
+                      value={confessionText}
+                      onChange={(e) => setConfessionText(e.target.value)}
+                      maxLength={300}
+                      required
+                    />
+                  </div>
+                  <button type="submit" className="submit-btn">Xabarni yuborish (Anonim)</button>
+                </form>
+              </div>
+
+              <div className="send-card">
+                <h2>📊 Profilni anonim baholash</h2>
+                <form onSubmit={handleSendRating} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div className="slider-group">
+                    <div className="slider-item">
+                      <div className="slider-header">
+                        <span>Kiyim kiyishi (Style)</span>
+                        <span>{rateStyle}/10</span>
+                      </div>
+                      <input
+                        type="range" min="1" max="10"
+                        className="slider-input"
+                        value={rateStyle}
+                        onChange={(e) => setRateStyle(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="slider-item">
+                      <div className="slider-header">
+                        <span>Soxtalik darajasi (Fake Level)</span>
+                        <span>{rateFake}/10</span>
+                      </div>
+                      <input
+                        type="range" min="1" max="10"
+                        className="slider-input"
+                        value={rateFake}
+                        onChange={(e) => setRateFake(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="slider-item">
+                      <div className="slider-header">
+                        <span>Kibrliligi (Kasal darajasi)</span>
+                        <span>{rateKibr}/10</span>
+                      </div>
+                      <input
+                        type="range" min="1" max="10"
+                        className="slider-input"
+                        value={rateKibr}
+                        onChange={(e) => setRateKibr(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="input-group">
+                    <input
+                      type="text"
+                      className="input-field"
+                      placeholder="U haqida biror izoh qoldiring (ixtiyoriy)"
+                      value={rateComment}
+                      onChange={(e) => setRateComment(e.target.value)}
+                      maxLength={100}
+                    />
+                  </div>
+
+                  <button type="submit" className="submit-btn" style={{ background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-cyan))', boxShadow: 'var(--glow-cyan)' }}>
+                    Baholashni yuborish
+                  </button>
+                </form>
+              </div>
+            </>
+          )}
         </div>
 
         <div style={{ padding: '20px', display: 'flex', justifyContent: 'center' }}>
